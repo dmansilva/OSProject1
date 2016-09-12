@@ -35,7 +35,33 @@ void file_contents(int fd, int stringCount, char *argString) {
     		printf("The line is too long");
     		exit(-1);												// break out if it is bigger
     	}
-    	if (t != '\n') {
+    	if (t == '\n' || t == '\0') {
+
+			//if (printLine == 1) {
+	    	//int lineCount = strlen(each_Line);
+	    	//lineCount++;
+	    	//each_Line[lineCount] = '\0';					
+	    	// need to add null terminating character to a char array if i want to print out as string
+	    	int comp;
+	    	int z;
+	    	for (z = 0; z < strlen(each_Line); z++) {
+
+	    		comp = strncmp(each_Line + z, argString, argStringLength);
+	    		if (comp == 0) {
+	    			printf("%s\n", each_Line);
+	    			break;
+	    		}
+
+	    	}
+	    	//printf("%s \n", each_Line);                			// printing out the line from each_Line char array
+	    	//printLine = 0;											// reseting the printLine to 0
+	    	memset(each_Line, '\0', strlen(each_Line));				// function that will set the each_Line char array to empty essentially
+	    	i = 0;													// resetting i to 0 for index of eachLine char array
+	    	//}
+	    	
+	    }
+	    else {															// else means that the next character read == a newline character
+
 	    	each_Line[i++] = t;											// adding the character byte to my char array for each_Line
 	    	//printf("%c\n", t);
 	    	//printf("%s \n", each_Line);
@@ -50,27 +76,6 @@ void file_contents(int fd, int stringCount, char *argString) {
 	    	//}
 	    	//printLine = 1;
 	    	
-	    }
-	    else {															// else means that the next character read == a newline character
-	    	//if (printLine == 1) {
-	    	//int lineCount = strlen(each_Line);
-	    	//lineCount++;
-	    	//each_Line[lineCount] = '\0';					// need to add null terminating character to a char array if i want to print out as string
-	    	int comp;
-	    	for (int z = 0; z < strlen(each_Line); z++) {
-
-	    		comp = strncmp(each_Line + z, argString, argStringLength);
-	    		if (comp == 0) {
-	    			printf("%s\n", each_Line);
-	    			break;
-	    		}
-
-	    	}
-	    	//printf("%s \n", each_Line);                			// printing out the line from each_Line char array
-	    	//printLine = 0;											// reseting the printLine to 0
-	    	memset(each_Line, '\0', strlen(each_Line));				// function that will set the each_Line char array to empty essentially
-	    	i = 0;													// resetting i to 0 for index of eachLine char array
-	    	//}
 	    }
 
     }
@@ -89,8 +94,8 @@ void file_contents(int fd, int stringCount, char *argString) {
 // 	return array;
 // }
 
-int main(int argc, char *argv[])
-{
+int main(int argc, char *argv[])  {
+	
     if (argc < 3) {
 		printf("Insufficient arguments.\n");
 		printf("usage: usfgrep <string> <file1> [<file2> ...]\n");
@@ -104,16 +109,14 @@ int main(int argc, char *argv[])
     argString = malloc(length);
     argString = argv[1];         // gets the string from the command line argument
  
-
-    for (int i = 2; i < argc; i++) {
+    int i;
+    for (i = 2; i < argc; i++) {
 
     	// call my read file contents line by line function
     	fd = open(argv[i], O_RDONLY);
     	file_contents(fd, length, argString);
     	close(fd);
     }
-    
-    printf("hi!\n");
     
     return 0;
 }
