@@ -31,12 +31,17 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 
     while ((bytes_read = read(fd , &t, 1)) > 0) {						// goes through the file character at a time, checks if char read is > 0
     	fileCount++;													// counter for every single byte
-    	if (fileCount > 511) {											// a check to see if the file is bigger than 511
-    		printf("The line is too long");
-    		exit(-1);												// break out if it is bigger
-    	}
+    	//if (fileCount > 511) {											// a check to see if the file is bigger than 511
+    	//	printf("The line is too long");
+    	//	exit(-1);												// break out if it is bigger
+    	//}
     	if (t == '\n' || t == '\0') {
 
+    		if (fileCount > 511) {											// a check to see if the file is bigger than 511
+    			printf("The line is too long");
+    			exit(-1);												// break out if it is bigger
+    		}
+    		fileCount = 0;
 	    	lineCounter++;
 	    	int comp;
 	    	int z;
