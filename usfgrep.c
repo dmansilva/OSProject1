@@ -10,21 +10,21 @@
 int fd;
 
 
-void file_contents(int fd, int stringCount, char *argString) {
+void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 
 	
 	int bytes_read;
 	char each_Line[511];
 	char t;
 	int fileCount = 0;
-	//char = 0;
+	int lineCounter = 0;
 	int i = 0;
 	int currIndex = 0;
 	int printLine = 0;
 	int argStringLength = strlen(argString);
 	
 	
-    if (fd < 0) {
+    if (fd < 0) {														// check to see if file can be opened
         printf("Cannot open file");
         exit(1);
     }
@@ -37,44 +37,27 @@ void file_contents(int fd, int stringCount, char *argString) {
     	}
     	if (t == '\n' || t == '\0') {
 
-			//if (printLine == 1) {
-	    	//int lineCount = strlen(each_Line);
-	    	//lineCount++;
-	    	//each_Line[lineCount] = '\0';					
-	    	// need to add null terminating character to a char array if i want to print out as string
+	    	lineCounter++;
 	    	int comp;
 	    	int z;
-	    	for (z = 0; z < strlen(each_Line); z++) {
+	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
 
-	    		comp = strncmp(each_Line + z, argString, argStringLength);
+	    		comp = strncmp(each_Line + z, argString, argStringLength);		// strn compare the line read in with argumentString, comparing by length of argString
 	    		if (comp == 0) {
-	    			printf("%s\n", each_Line);
+	    			printf("%s [%d]:%s\n", argFile, lineCounter, each_Line);		
 	    			break;
 	    		}
 
 	    	}
-	    	//printf("%s \n", each_Line);                			// printing out the line from each_Line char array
-	    	//printLine = 0;											// reseting the printLine to 0
-	    	memset(each_Line, '\0', strlen(each_Line));				// function that will set the each_Line char array to empty essentially
+	    	               			
+	    	memset(each_Line, '\0', strlen(each_Line));				// memset sets all bytes in my char array to null character
 	    	i = 0;													// resetting i to 0 for index of eachLine char array
-	    	//}
+	    	
 	    	
 	    }
 	    else {															// else means that the next character read == a newline character
 
 	    	each_Line[i++] = t;											// adding the character byte to my char array for each_Line
-	    	//printf("%c\n", t);
-	    	//printf("%s \n", each_Line);
-	    	//if (argString[currIndex] == t) {				// check to see if the character read in equals the character at the currentIndex of argString
-	    	//	currIndex++;											// indexing currentIndex of argString
-	    	//	if (currIndex == stringCount) {							// checking currIndex size vs StringCount to see if complete word is matched
-	    	//		printLine = 1;										// indicator to print the Line or not
-	    	//	}
-	    	//}
-	    	//else {
-	    	//	currIndex = 0;											// resets the currentIndex everytime a character is not matched
-	    	//}
-	    	//printLine = 1;
 	    	
 	    }
 
@@ -84,18 +67,8 @@ void file_contents(int fd, int stringCount, char *argString) {
 
 }
 
-// char reset_LineChar(char* array) {
-	
-
-// 	for (int i = 0; i < strlen(array); i++) {
-// 		array[i] = '\0';
-// 	}
-
-// 	return array;
-// }
-
 int main(int argc, char *argv[])  {
-	
+
     if (argc < 3) {
 		printf("Insufficient arguments.\n");
 		printf("usage: usfgrep <string> <file1> [<file2> ...]\n");
@@ -103,20 +76,28 @@ int main(int argc, char *argv[])  {
 		exit(-1);
     }
 
-    int length = strlen(argv[1]);    // need the count of the string from the command line argument
+    int length = strlen(argv[1]);    					// need the count of the string from the command line argument
 
     char *argString;
     argString = malloc(length);
-    argString = argv[1];         // gets the string from the command line argument
+    argString = argv[1];         						// gets the string from the command line argument
+
+    char *argFile;
  
     int i;
     for (i = 2; i < argc; i++) {
 
-    	// call my read file contents line by line function
-    	fd = open(argv[i], O_RDONLY);
-    	file_contents(fd, length, argString);
-    	close(fd);
+    	fd = open(argv[i], O_RDONLY);							// open the file and save it to an int file descriptor
+    	argFile = malloc(strlen(argv[i]));						// malloc space for the file name
+    	argFile = argv[i];										// save file name to the variable we malloced for
+    	file_contents(fd, length, argString, argFile);			// call file_contents functions to grep the lines we want
+    	close(fd);												// close the file before the next iteration
     }
     
+   
     return 0;
 }
+
+
+
+
