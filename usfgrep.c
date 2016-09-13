@@ -30,46 +30,38 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
     }
 
     while ((bytes_read = read(fd , &t, 1)) > 0) {						// goes through the file character at a time, checks if char read is > 0
+
     	fileCount++;													// counter for every single byte
-    	//if (fileCount > 511) {											// a check to see if the file is bigger than 511
-    	//	printf("The line is too long");
-    	//	exit(-1);												// break out if it is bigger
-    	//}
+    	
     	if (t == '\n' || t == '\0') {
 
     		if (fileCount > 511) {											// a check to see if the file is bigger than 511
     			printf("The line is too long");
     			exit(-1);												// break out if it is bigger
     		}
+
     		fileCount = 0;
 	    	lineCounter++;
 	    	int comp;
 	    	int z;
-	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
 
+	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
+	    		
 	    		comp = strncmp(each_Line + z, argString, argStringLength);		// strn compare the line read in with argumentString, comparing by length of argString
 	    		if (comp == 0) {
 	    			printf("%s [%d]:%s\n", argFile, lineCounter, each_Line);		
 	    			break;
 	    		}
-
 	    	}
 	    	               			
 	    	memset(each_Line, '\0', strlen(each_Line));				// memset sets all bytes in my char array to null character
 	    	i = 0;													// resetting i to 0 for index of eachLine char array
 	    	
-	    	
 	    }
 	    else {															// else means that the next character read == a newline character
-
 	    	each_Line[i++] = t;											// adding the character byte to my char array for each_Line
-	    	
 	    }
-
     }
-
-
-
 }
 
 int main(int argc, char *argv[])  {
@@ -91,7 +83,6 @@ int main(int argc, char *argv[])  {
  
     int i;
     for (i = 2; i < argc; i++) {
-
     	fd = open(argv[i], O_RDONLY);							// open the file and save it to an int file descriptor
     	argFile = malloc(strlen(argv[i]));						// malloc space for the file name
     	argFile = argv[i];										// save file name to the variable we malloced for
@@ -99,7 +90,6 @@ int main(int argc, char *argv[])  {
     	close(fd);												// close the file before the next iteration
     }
     
-   
     return 0;
 }
 
