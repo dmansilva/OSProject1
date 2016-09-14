@@ -19,12 +19,9 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 	int fileCount = 0;
 	int lineCounter = 0;
 	int i = 0;
-	int currIndex = 0;
-	int printLine = 0;
-	int argStringLength = strlen(argString);
 	
-	
-    if (fd < 0) {														// check to see if file can be opened
+	// check to see if file can be opened
+    if (fd < 0) {														
         printf("Cannot open file");
         exit(1);
     }
@@ -44,10 +41,13 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 	    	lineCounter++;
 	    	int comp;
 	    	int z;
+	    	int line_length;
+	    	line_length = strlen(each_Line);
+	    	each_Line[line_length] = '\0';
 
 	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
 
-	    		comp = strncmp(each_Line + z, argString, argStringLength);		// strn compare the line read in with argumentString, comparing by length of argString
+	    		comp = strncmp(each_Line + z, argString, stringCount);		// strn compare the line read in with argumentString, comparing by length of argString
 	    		if (comp == 0) {
 	    			printf("%s [%d]:%s\n", argFile, lineCounter, each_Line);		
 	    			break;
