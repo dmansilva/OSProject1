@@ -41,9 +41,9 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 	    	lineCounter++;
 	    	int comp;
 	    	int z;
-	    	int line_length;
-	    	line_length = strlen(each_Line);
-	    	each_Line[line_length++] = '\0';
+	    	//int line_length;
+	    	//line_length = strlen(each_Line);
+	    	each_Line[i++] = '\0';
 
 	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
 
