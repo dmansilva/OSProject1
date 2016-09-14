@@ -14,7 +14,7 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 
 	
 	int bytes_read;
-	char each_Line[511];
+	char each_Line[512];
 	char t;
 	int fileCount = 0;
 	int lineCounter = 0;
@@ -46,7 +46,7 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 	    	int z;
 
 	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
-	    		
+
 	    		comp = strncmp(each_Line + z, argString, argStringLength);		// strn compare the line read in with argumentString, comparing by length of argString
 	    		if (comp == 0) {
 	    			printf("%s [%d]:%s\n", argFile, lineCounter, each_Line);		
@@ -54,7 +54,8 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
 	    		}
 	    	}
 	    	               			
-	    	memset(each_Line, '\0', strlen(each_Line));				// memset sets all bytes in my char array to null character
+	    	memset(each_Line, '\0', 512);				// memset sets all bytes in my char array to null character
+	    	
 	    	i = 0;													// resetting i to 0 for index of eachLine char array
 	    	
 	    }
