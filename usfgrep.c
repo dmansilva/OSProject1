@@ -9,15 +9,37 @@
 
 int fd;
 
+// method that takes the argument string given and looks for a match with the line extracted from the file
+void string_match(char *each_line, char *arg_file, char *arg_string, int string_count, int line_counter) {
 
-void file_contents(int fd, int stringCount, char *argString, char *argFile) {
+	int comp;
+	int z;
+
+	// iterate through the bytes in the line read
+	for (z = 0; z < strlen(each_line); z++) {
+
+		// strn comparing the line read in with argumentString, comparing by the length of argString
+		comp = strncmp(each_line + z, arg_string, string_count);
+
+		// if the comp variable == 0 then it means we have a match
+		if (comp == 0) {
+			printf("%s [%d]:%s\n", arg_file, line_counter, each_line);		
+	    	break;
+		}
+
+	}
+
+}
+
+// method that takes in a file and reads it byte by byte and saving the contents line by line
+void file_contents(int fd, int string_count, char *arg_string, char *arg_file) {
 
 	
 	int bytes_read;
-	char each_Line[512];
+	char each_line[512];
 	char t;
-	int fileCount = 0;
-	int lineCounter = 0;
+	int line_byte_count = 0;
+	int line_counter = 0;
 	int i = 0;
 	
 	// check to see if file can be opened
@@ -26,41 +48,45 @@ void file_contents(int fd, int stringCount, char *argString, char *argFile) {
         exit(1);
     }
 
-    while ((bytes_read = read(fd , &t, 1)) > 0) {						// goes through the file character at a time, checks if char read is > 0
+    // goes through the file character at a time, checks if char read is > 0
+    while ((bytes_read = read(fd , &t, 1)) > 0) {						
 
-    	fileCount++;													// counter for every single byte
+    	// counter for every single byte
+    	line_byte_count++;													
     	
+    	// check to see if the next bit read is a new line character or a terminating character
     	if (t == '\n' || t == '\0') {
 
-    		if (fileCount > 511) {											// a check to see if the file is bigger than 511
+    		// a check to see if the file is bigger than 511
+    		if (line_byte_count > 511) {											
     			printf("The line is too long");
-    			exit(-1);												// break out if it is bigger
+    			exit(-1);												
     		}
 
-    		fileCount = 0;
-	    	lineCounter++;
-	    	int comp;
-	    	int z;
-	    	//int line_length;
-	    	//line_length = strlen(each_Line);
-	    	each_Line[i++] = '\0';
+    		// set the line_byte_count to 0 because we have reached the end of the line
+    		line_byte_count = 0;
 
-	    	for (z = 0; z < strlen(each_Line); z++) {							// iterate through the bytes in the line read
+    		// add the count of lines in file
+	    	line_counter++;
 
-	    		comp = strncmp(each_Line + z, argString, stringCount);		// strn compare the line read in with argumentString, comparing by length of argString
-	    		if (comp == 0) {
-	    			printf("%s [%d]:%s\n", argFile, lineCounter, each_Line);		
-	    			break;
-	    		}
-	    	}
-	    	               			
-	    	memset(each_Line, '\0', 512);				// memset sets all bytes in my char array to null character
+	    	// adding null terminating character at the end of the line read in
+	    	each_line[i++] = '\0';
+
+	    	string_match(each_line, arg_file, arg_string, string_count, line_counter);
 	    	
-	    	i = 0;													// resetting i to 0 for index of eachLine char array
+	    	// memset sets all bytes in my char array to null terminating character               			
+	    	memset(each_line, '\0', 512);				
+	    	
+	    	// resetting i to 0 for index of eachLine char array
+	    	i = 0;													
 	    	
 	    }
-	    else {															// else means that the next character read == a newline character
-	    	each_Line[i++] = t;											// adding the character byte to my char array for each_Line
+
+	    // else means that the next character read != a newline or null terminating character
+	    else {
+
+	    	// adding in the byte read to the end of my character array (each_line)															
+	    	each_line[i++] = t;											
 	    }
     }
 }
@@ -74,21 +100,28 @@ int main(int argc, char *argv[])  {
 		exit(-1);
     }
 
-    int length = strlen(argv[1]);    					// need the count of the string from the command line argument
+    // need the count of the string from the command line argument
+    int length = strlen(argv[1]);    					
 
-    char *argString;
-    argString = malloc(length);
-    argString = argv[1];         						// gets the string from the command line argument
+    char *arg_string;
+    arg_string = malloc(length);
 
-    char *argFile;
+    // gets the string from the command line argument
+    arg_string = argv[1];         						
+
+    char *arg_file;
  
     int i;
     for (i = 2; i < argc; i++) {
-    	fd = open(argv[i], O_RDONLY);							// open the file and save it to an int file descriptor
-    	argFile = malloc(strlen(argv[i]));						// malloc space for the file name
-    	argFile = argv[i];										// save file name to the variable we malloced for
-    	file_contents(fd, length, argString, argFile);			// call file_contents functions to grep the lines we want
-    	close(fd);												// close the file before the next iteration
+
+    	// open the file and save it to an int file descriptor
+    	fd = open(argv[i], O_RDONLY);							
+    	arg_file = malloc(strlen(argv[i]));	
+
+    	// save file name to the variable we malloced for					
+    	arg_file = argv[i];										
+    	file_contents(fd, length, arg_string, arg_file);			
+    	close(fd);												
     }
     
     return 0;
